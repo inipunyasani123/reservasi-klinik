@@ -1,4 +1,4 @@
-const URL = 'https://reservasi-klinik-rose.vercel.app';
+const URL = 'https://reservasi-klinik.pintuweb.id';
 
 export default function sitemap() {
   const now = new Date();

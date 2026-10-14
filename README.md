@@ -2,7 +2,7 @@
 
 Klinik keluarga (fiktif). Paradigma **slot penyedia**: pilih dokter, lalu tanggal pada hari praktiknya dan slot 30 menit yang masih kosong.
 
-**Demo live:** https://reservasi-klinik-rose.vercel.app
+**Demo live:** https://reservasi-klinik.pintuweb.id
 
 ![Tangkapan layar](public/og.jpg)
 
