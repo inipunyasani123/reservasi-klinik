@@ -58,7 +58,7 @@ export default function DaftarJanji() {
                       </ul>
                     </div>
                   )}
-                  <button type="button" onClick={() => batal(r.id)} className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-red-800 hover:underline"><X size={15} aria-hidden="true" /> Batalkan</button>
+                  <button type="button" onClick={() => batal(r.id)} className="mt-2 inline-flex items-center gap-1.5 py-2 text-sm font-semibold text-red-800 hover:underline"><X size={15} aria-hidden="true" /> Batalkan</button>
                 </li>
               );
             })}
@@ -73,7 +73,7 @@ export default function DaftarJanji() {
             {lalu.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-3 text-sm text-slate-700">
                 <span>{fmtTanggal(r.date, { day: 'numeric', month: 'short', year: 'numeric' })}, {r.time} · {r.doctorName}</span>
-                <button type="button" onClick={() => setPunyaku((p) => p.filter((x) => x.id !== r.id))} className="font-semibold text-slate-800 hover:underline">Hapus</button>
+                <button type="button" onClick={() => setPunyaku((p) => p.filter((x) => x.id !== r.id))} className="-my-2 py-2 font-semibold text-slate-800 hover:underline">Hapus</button>
               </li>
             ))}
           </ul>

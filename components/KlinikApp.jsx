@@ -1,19 +1,24 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { CalendarDays, Clock, Check, User, Phone, ClipboardList, ChevronRight, Search, Siren } from 'lucide-react';
 import { klinik, doctors, kategori, buildSlots, terisiContoh, HARI } from '@/lib/data';
 import { useLocalStorage } from '@/lib/useLocalStorage';
 import { useHariIni } from '@/lib/useHariIni';
+import { useDialog } from '@/lib/useDialog';
 import { tambahHari, hariKe, fmtTanggal, sudahLewat, kodePesan } from '@/lib/waktu';
 
 const STEPS = ['Dokter', 'Jadwal', 'Data', 'Selesai'];
 const KOSONG = { name: '', phone: '', complaint: '', jenis: 'baru', bayar: 'umum' };
 
+// Gulir ke langkah berikutnya dan fokuskan judulnya (tanpa animasi bila pengguna minta gerak dikurangi).
+function keLangkah(el) {
+  if (!el) return;
+  el.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  el.focus({ preventScroll: true });
+}
+
 export default function KlinikApp() {
-  const sp = useSearchParams();
   const { hari, sekarang } = useHariIni(60);
   const [punyaku, setPunyaku] = useLocalStorage('rumpunwaras.janji', []);
   const [doctorId, setDoctorId] = useState(null);
@@ -23,9 +28,21 @@ export default function KlinikApp() {
   const [query, setQuery] = useState('');
   const [spec, setSpec] = useState('Semua');
   const [done, setDone] = useState(null);
+  const dialog = useDialog(!!done, () => setDone(null));
+  const judulJadwal = useRef(null);
+  const judulData = useRef(null);
+  const [langkah, setLangkah] = useState(null);
 
-  // ?dokter= dari halaman Dokter & jadwal.
-  useEffect(() => { const d = sp.get('dokter'); if (doctors.some((x) => x.id === d)) setDoctorId(d); }, [sp]);
+  // ?dokter= dari halaman Dokter & jadwal (dibaca setelah dimuat supaya halaman tetap dirender di server).
+  useEffect(() => {
+    const d = new URLSearchParams(window.location.search).get('dokter');
+    if (doctors.some((x) => x.id === d)) { setDoctorId(d); setLangkah('jadwal'); }
+  }, []);
+  useEffect(() => {
+    if (!langkah) return;
+    keLangkah(langkah === 'jadwal' ? judulJadwal.current : judulData.current);
+    setLangkah(null);
+  }, [langkah]);
 
   const doctor = doctors.find((d) => d.id === doctorId) || null;
   const slots = useMemo(() => (doctor ? buildSlots(doctor.start, doctor.end) : []), [doctor]);
@@ -52,7 +69,8 @@ export default function KlinikApp() {
   }), [query, spec]);
 
   const step = done ? 4 : time ? 3 : doctor ? 2 : 1;
-  const pickDoctor = (id) => { setDoctorId(id); setDate(null); setTime(null); };
+  const pickDoctor = (id) => { setDoctorId(id); setDate(null); setTime(null); setLangkah('jadwal'); };
+  const pickTime = (s) => { setTime(s); setLangkah('data'); };
 
   const confirm = (e) => {
     e.preventDefault();
@@ -100,10 +118,10 @@ export default function KlinikApp() {
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cari nama dokter atau spesialisasi…" aria-label="Cari dokter"
             className="w-full rounded-xl border border-slate-300 bg-white py-3 pl-11 pr-4 text-sm shadow-sm outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600" />
         </div>
-        <div className="relative mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Saring spesialisasi">
           {kategori.map((s) => (
             <button key={s} type="button" onClick={() => setSpec(s)} aria-pressed={spec === s}
-              className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition ${spec === s ? 'bg-blue-700 text-white shadow' : 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50'}`}>
+              className={`min-h-9 rounded-full px-4 py-1.5 text-xs font-semibold transition ${spec === s ? 'bg-blue-700 text-white shadow' : 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50'}`}>
               {s}
             </button>
           ))}
@@ -129,8 +147,8 @@ export default function KlinikApp() {
         </div>
 
         {doctor && (
-          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} aria-labelledby="h-jadwal">
-            <h2 id="h-jadwal" className="mt-10 text-sm font-bold uppercase tracking-wide text-slate-800">Pilih tanggal &amp; jam</h2>
+          <section aria-labelledby="h-jadwal" className="anim-naik">
+            <h2 id="h-jadwal" ref={judulJadwal} tabIndex={-1} className="mt-10 scroll-mt-28 text-sm font-bold uppercase tracking-wide text-slate-800 outline-none">Pilih tanggal &amp; jam</h2>
             <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               {!hari ? <p className="text-sm text-slate-600">Memuat jadwal…</p> : hariPraktik.length === 0 ? <p className="text-sm text-slate-700">Tidak ada jadwal tersisa dalam dua minggu ke depan.</p> : (
                 <>
@@ -148,7 +166,7 @@ export default function KlinikApp() {
                     {slots.map((s) => {
                       const booked = bookedSlots.includes(s); const habis = date ? lewat(date, s) : true; const active = time === s;
                       return (
-                        <button key={s} type="button" disabled={booked || habis} onClick={() => setTime(s)} aria-pressed={active}
+                        <button key={s} type="button" data-slot disabled={booked || habis} onClick={() => pickTime(s)} aria-pressed={active}
                           aria-label={`${s}${booked ? ', terisi' : habis ? ', sudah lewat' : ''}`}
                           className={`rounded-lg border py-2 text-sm font-semibold transition ${active ? 'border-blue-700 bg-blue-700 text-white' : booked || habis ? 'cursor-not-allowed border-slate-100 bg-slate-100 text-slate-500 line-through' : 'border-slate-300 bg-white text-slate-800 hover:border-blue-500 hover:text-blue-800'}`}>
                           {s}
@@ -160,12 +178,12 @@ export default function KlinikApp() {
                 </>
               )}
             </div>
-          </motion.section>
+          </section>
         )}
 
         {doctor && time && (
-          <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onSubmit={confirm} aria-labelledby="h-data">
-            <h2 id="h-data" className="mt-10 text-sm font-bold uppercase tracking-wide text-slate-800">Data pasien</h2>
+          <form onSubmit={confirm} aria-labelledby="h-data" className="anim-naik">
+            <h2 id="h-data" ref={judulData} tabIndex={-1} className="mt-10 scroll-mt-28 text-sm font-bold uppercase tracking-wide text-slate-800 outline-none">Data pasien</h2>
             <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-blue-50 px-4 py-3 text-sm">
                 <span className="font-semibold text-blue-950">{doctor.name}</span>
@@ -193,14 +211,13 @@ export default function KlinikApp() {
               <button type="submit" className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-700 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-800">Simpan janji temu <ChevronRight size={16} aria-hidden="true" /></button>
               <p className="mt-2 text-center text-xs text-slate-600">Purwarupa: janji disimpan di peramban ini dan tidak dikirim ke klinik. Jangan tulis data medis sungguhan.</p>
             </div>
-          </motion.form>
+          </form>
         )}
       </main>
 
-      <AnimatePresence>
-        {done && (
-          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDone(null)}>
-            <motion.div role="dialog" aria-modal="true" aria-labelledby="judul-selesai" initial={{ scale: 0.9, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0 }} onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl bg-white p-7 text-center shadow-xl">
+      {done && (
+          <div className="anim-pudar fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-5" onClick={() => setDone(null)}>
+            <div ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="judul-selesai" onClick={(e) => e.stopPropagation()} className="anim-skala w-full max-w-sm rounded-2xl bg-white p-7 text-center shadow-xl outline-none">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-700 text-white"><Check size={28} /></div>
               <h2 id="judul-selesai" className="mt-4 text-2xl font-bold text-slate-900">Janji temu tersimpan</h2>
               <p className="mt-1 text-sm text-slate-700">Kode <span className="font-mono font-semibold text-slate-900">{done.kode}</span> · nomor urut {done.urut}</p>
@@ -214,10 +231,9 @@ export default function KlinikApp() {
                 <Link href="/janji" className="rounded-xl bg-blue-700 py-3 text-sm font-semibold text-white hover:bg-blue-800">Janji saya</Link>
                 <button type="button" onClick={() => setDone(null)} className="rounded-xl border border-slate-300 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50">Tutup</button>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </div>
+          </div>
+      )}
     </div>
   );
 }

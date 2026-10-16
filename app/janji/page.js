@@ -1,11 +1,12 @@
 import DaftarJanji from '@/components/DaftarJanji';
+import { halaman } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Janji saya',
-  description: 'Lihat, siapkan, dan batalkan janji temu Klinik Rumpun Waras yang tersimpan di peramban ini.',
-  alternates: { canonical: '/janji' },
+export const metadata = halaman({
+  judul: 'Janji saya',
+  deskripsi: 'Lihat, siapkan, dan batalkan janji temu Klinik Rumpun Waras yang tersimpan di peramban ini.',
+  path: '/janji',
   robots: { index: false, follow: true },
-};
+});
 
 export default function JanjiPage() {
   return (
