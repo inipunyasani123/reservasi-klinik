@@ -28,6 +28,12 @@ Klinik keluarga (fiktif). Paradigma **slot penyedia**: pilih dokter, lalu tangga
 - Font: Inter (next/font)
 - SEO: metadata per halaman, Open Graph, sitemap.xml, dan robots.txt
 
+## Gambar
+
+Potret keempat dokter adalah ilustrasi buatan sendiri dalam satu gaya (SVG di `scripts/ilustrasi/potret.mjs`, dirender
+ke WebP 600×600); tokohnya rekaan. Daftar berkas dan cara membuat ulang: [`public/images/SUMBER.md`](public/images/SUMBER.md).
+Gambar disajikan statis dari `public/_img/` (varian WebP buatan `scripts/static-images.mjs`), tanpa Image Optimization Vercel.
+
 ## Menjalankan secara lokal
 
 ```bash

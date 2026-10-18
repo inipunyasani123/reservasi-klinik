@@ -1,8 +1,9 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import FotoDokter from './FotoDokter';
 import { CalendarDays, Clock, Check, User, Phone, ClipboardList, ChevronRight, Search, Siren } from 'lucide-react';
-import { klinik, doctors, kategori, buildSlots, terisiContoh, HARI } from '@/lib/data';
+import { klinik, doctors, kategori, buildSlots, terisiContoh, HARI, getDoctor } from '@/lib/data';
 import { useLocalStorage } from '@/lib/useLocalStorage';
 import { useHariIni } from '@/lib/useHariIni';
 import { useDialog } from '@/lib/useDialog';
@@ -134,7 +135,7 @@ export default function KlinikApp() {
               <button key={d.id} type="button" onClick={() => pickDoctor(d.id)} aria-pressed={active}
                 className={`relative flex items-center gap-3 rounded-xl border bg-white p-4 text-left shadow-sm transition ${active ? 'border-2 border-blue-700' : 'border-slate-200 hover:border-blue-400'}`}>
                 {active && <span className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-700 text-white" aria-hidden="true"><Check size={14} /></span>}
-                <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${d.color}`} aria-hidden="true">{d.initials}</span>
+                <FotoDokter dokter={d} className="h-14 w-14" />
                 <span className="min-w-0 flex-1">
                   <span className="block font-semibold text-slate-900">{d.name}</span>
                   <span className="block text-xs font-medium text-blue-800">{d.spec}</span>
@@ -186,7 +187,7 @@ export default function KlinikApp() {
             <h2 id="h-data" ref={judulData} tabIndex={-1} className="mt-10 scroll-mt-28 text-sm font-bold uppercase tracking-wide text-slate-800 outline-none">Data pasien</h2>
             <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-blue-50 px-4 py-3 text-sm">
-                <span className="font-semibold text-blue-950">{doctor.name}</span>
+                <span className="flex items-center gap-2.5 font-semibold text-blue-950"><FotoDokter dokter={doctor} ukuran={36} className="h-9 w-9" />{doctor.name}</span>
                 <span className="text-blue-900">{fmtTanggal(date)} · {time} · nomor urut {slots.indexOf(time) + 1}</span>
               </div>
               <div className="space-y-3">
@@ -218,7 +219,10 @@ export default function KlinikApp() {
       {done && (
           <div className="anim-pudar fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-5" onClick={() => setDone(null)}>
             <div ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="judul-selesai" onClick={(e) => e.stopPropagation()} className="anim-skala w-full max-w-sm rounded-2xl bg-white p-7 text-center shadow-xl outline-none">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-700 text-white"><Check size={28} /></div>
+              <div className="relative mx-auto h-16 w-16">
+                {getDoctor(done.doctorId) && <FotoDokter dokter={getDoctor(done.doctorId)} ukuran={64} className="h-16 w-16" />}
+                <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-blue-700 text-white ring-2 ring-white"><Check size={16} aria-hidden="true" /></span>
+              </div>
               <h2 id="judul-selesai" className="mt-4 text-2xl font-bold text-slate-900">Janji temu tersimpan</h2>
               <p className="mt-1 text-sm text-slate-700">Kode <span className="font-mono font-semibold text-slate-900">{done.kode}</span> · nomor urut {done.urut}</p>
               <dl className="mt-5 space-y-1.5 rounded-xl bg-slate-50 p-4 text-left text-sm text-slate-700">

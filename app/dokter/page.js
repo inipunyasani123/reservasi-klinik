@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Check } from 'lucide-react';
+import FotoDokter from '@/components/FotoDokter';
 import { doctors, HARI } from '@/lib/data';
 import { halaman } from '@/lib/seo';
 
@@ -31,8 +32,10 @@ export default function DokterPage() {
             {doctors.map((d) => (
               <tr key={d.id} className="border-t border-slate-100">
                 <th scope="row" className="sticky left-0 z-10 bg-white px-4 py-3 font-normal shadow-[1px_0_0_rgb(241_245_249)]">
-                  <span className="block font-semibold text-slate-900">{d.name}</span>
-                  <span className="text-xs text-blue-800">{d.spec}</span>
+                  <span className="flex items-center gap-3">
+                    <FotoDokter dokter={d} ukuran={36} className="hidden h-9 w-9 sm:block" />
+                    <span><span className="block font-semibold text-slate-900">{d.name}</span><span className="text-xs text-blue-800">{d.spec}</span></span>
+                  </span>
                 </th>
                 {MINGGU.map((h) => (
                   <td key={h} className="px-3 py-3 text-center">
@@ -49,7 +52,7 @@ export default function DokterPage() {
         {doctors.map((d) => (
           <section key={d.id} id={d.id} className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-4">
-              <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${d.color}`} aria-hidden="true">{d.initials}</span>
+              <FotoDokter dokter={d} ukuran={88} alt={d.fotoAlt} className="h-[5.5rem] w-[5.5rem] ring-4 ring-blue-50" />
               <div>
                 <h2 className="text-lg font-bold text-slate-900">{d.name}</h2>
                 <p className="text-sm font-medium text-blue-800">{d.spec}</p>

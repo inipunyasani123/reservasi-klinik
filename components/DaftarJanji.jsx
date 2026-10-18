@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import FotoDokter from './FotoDokter';
 import { CalendarDays, Clock, Hash, X, Check } from 'lucide-react';
 import { klinik, getDoctor } from '@/lib/data';
 import { useLocalStorage } from '@/lib/useLocalStorage';
@@ -38,10 +39,13 @@ export default function DaftarJanji() {
               return (
                 <li key={r.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-blue-800">{h === 0 ? 'Hari ini' : h === 1 ? 'Besok' : `${h} hari lagi`}</p>
-                      <p className="mt-1 text-lg font-bold text-slate-900">{r.doctorName}</p>
-                      <p className="text-sm text-slate-700">{r.spec}</p>
+                    <div className="flex items-center gap-3">
+                      {d && <FotoDokter dokter={d} ukuran={52} className="h-13 w-13" />}
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-blue-800">{h === 0 ? 'Hari ini' : h === 1 ? 'Besok' : `${h} hari lagi`}</p>
+                        <p className="mt-1 text-lg font-bold text-slate-900">{r.doctorName}</p>
+                        <p className="text-sm text-slate-700">{r.spec}</p>
+                      </div>
                     </div>
                     <p className="font-mono text-sm font-semibold text-slate-800">{r.kode}</p>
                   </div>
