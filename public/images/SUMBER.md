@@ -1,7 +1,7 @@
 # Sumber gambar — Klinik Rumpun Waras
 
 Semua gambar di situs ini **ilustrasi buatan sendiri** (PintuWeb, Okt 2026). Dokter dan klinik fiktif; potret ini bukan
-wajah orang sungguhan dan tidak memakai foto stok.
+wajah orang sungguhan: wajahnya polos (tanpa mata, alis, hidung, mulut; diubah 30 Okt 2026) dan tidak memakai foto stok.
 
 | Berkas | Isi | Pembuat | Lisensi |
 |---|---|---|---|

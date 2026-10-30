@@ -1,6 +1,6 @@
 // Potret ilustrasi empat dokter fiktif Klinik Rumpun Waras (buatan sendiri, SVG -> WebP 600x600).
 // Satu gaya untuk semua: bidang datar berbayang lembut, latar warna dokter + daun rumpun, grain halus.
-// Tokohnya rekaan; bukan wajah orang sungguhan.
+// Tokohnya rekaan; wajah dibuat polos (tanpa mata/alis/hidung/mulut).
 //
 // Pemakaian (dari akar proyek):
 //   node scripts/ilustrasi/potret.mjs <folder>            -> tulis <folder>/<id>.svg
@@ -29,25 +29,7 @@ function wajah(o) {
   ${o.telinga !== false ? `<ellipse cx="222" cy="258" rx="13" ry="22" fill="${o.kulitGelap}"/><ellipse cx="378" cy="258" rx="13" ry="22" fill="${o.kulitGelap}"/>` : ''}
   <path d="${muka}" fill="${o.kulit}"/>
   <path d="M352 170C374 188 382 214 380 240C380 286 ${364 - (52 - j)} 318 ${338 - (52 - j) * 0.6} 341C350 312 360 276 358 236C357 206 354 186 352 170Z" fill="${o.kulitGelap}" opacity=".45"/>
-  ${mata(266)}${mata(334)}
-  <g fill="none" stroke="#23150c" stroke-linecap="round">
-    <path d="M249 262Q266 249 283 260" stroke-width="3.6"/><path d="M351 262Q334 249 317 260" stroke-width="3.6"/>
-    ${o.bulumata ? '<path d="M247 262L241 257M353 262L359 257" stroke-width="2.4"/>' : ''}
-  </g>
-  <g fill="none" stroke="${o.kulitGelap}" stroke-linecap="round" opacity=".7"><path d="M252 267Q266 273 280 266"/><path d="M348 267Q334 273 320 266"/></g>
-  <g fill="none" stroke="${o.alis}" stroke-linecap="round" stroke-width="${o.alisTebal || 5.5}">
-    <path d="M245 241Q263 228 286 234"/><path d="M355 241Q337 228 314 234"/>
-  </g>
-  <g fill="none" stroke="${o.kulitGelap}" stroke-linecap="round">
-    <path d="M288 302Q294 308 300 306Q306 308 312 302" stroke-width="2.6"/>
-  </g>
-  <path d="M305 252C309 270 316 287 314 297C311 303 305 305 300 305C306 299 308 289 306 275Z" fill="${o.kulitGelap}" opacity=".4"/>
-  <ellipse cx="249" cy="294" rx="17" ry="9" fill="#e8846b" opacity="${o.rona ?? 0.22}"/><ellipse cx="351" cy="294" rx="17" ry="9" fill="#e8846b" opacity="${o.rona ?? 0.22}"/>
-  <path d="M276 324Q288 317 296 320Q300 322 304 320Q312 317 324 324Q300 331 276 324Z" fill="${o.bibir}"/>
-  <path d="M279 325Q300 345 321 325Q300 334 279 325Z" fill="${o.bibirBawah}"/>
-  <path d="M274 323Q300 336 326 323" fill="none" stroke="${o.garisBibir}" stroke-width="2.2" stroke-linecap="round"/>
-  <path d="M292 337Q300 340 308 337" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="2" stroke-linecap="round"/>
-  ${o.usia ? `<g fill="none" stroke="${o.kulitGelap}" stroke-linecap="round" opacity=".55" stroke-width="2"><path d="M278 300Q270 314 276 328"/><path d="M322 300Q330 314 324 328"/><path d="M268 206Q300 198 332 206"/></g>` : ''}`
+  <!-- wajah polos: tanpa mata, alis, hidung, mulut -->`
 }
 
 // ---- busana ----

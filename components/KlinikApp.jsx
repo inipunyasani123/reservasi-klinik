@@ -103,7 +103,7 @@ export default function KlinikApp() {
                   <span className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition ${active ? 'bg-blue-700 text-white' : 'bg-slate-200 text-slate-600'}`}>
                     {step > n ? <Check size={15} aria-hidden="true" /> : n}
                   </span>
-                  <span className={`text-[11px] font-semibold ${active ? 'text-blue-800' : 'text-slate-600'}`}>{s}</span>
+                  <span className={`text-xs font-semibold ${active ? 'text-blue-800' : 'text-slate-600'}`}>{s}</span>
                 </div>
                 {i < STEPS.length - 1 && <div className={`mx-2 h-1 flex-1 rounded-full ${step > n ? 'bg-blue-700' : 'bg-slate-200'}`} aria-hidden="true" />}
               </li>
@@ -158,7 +158,7 @@ export default function KlinikApp() {
                     {hariPraktik.map((d) => (
                       <button key={d} type="button" onClick={() => { setDate(d); setTime(null); }} aria-pressed={date === d}
                         className={`shrink-0 rounded-lg border px-3 py-2 text-center text-sm transition ${date === d ? 'border-blue-700 bg-blue-700 text-white' : 'border-slate-300 bg-white text-slate-800 hover:border-blue-500'}`}>
-                        <span className="block text-[11px] uppercase">{HARI[hariKe(d)].slice(0, 3)}</span>
+                        <span className="block text-xs uppercase">{HARI[hariKe(d)].slice(0, 3)}</span>
                         <span className="block font-bold">{fmtTanggal(d, { day: 'numeric', month: 'short' })}</span>
                       </button>
                     ))}
